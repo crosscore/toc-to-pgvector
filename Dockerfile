@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     vim \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 RUN echo "alias ls='ls --color=auto'" >> ~/.bashrc
