@@ -32,7 +32,7 @@ CREATE TABLE items (
 ## 3. HNSWインデックスの作成
 
 ```sql
-CREATE INDEX ON items USING hnsw (toc_vector);
+CREATE INDEX ON items USING hnsw (toc_vector vector_ip_ops);
 ```
 
 ## 4. GINインデックスの作成
