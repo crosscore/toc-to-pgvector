@@ -1,5 +1,5 @@
 
-# コサイン類似度による検索クエリの高速化
+# HNSW + GINによる類似検索の高速化
 
 ## 1. PostgreSQLとpgvectorのインストール
 
@@ -22,26 +22,40 @@ psql -c "CREATE EXTENSION vector"
 ```sql
 CREATE TABLE items (
     id serial PRIMARY KEY,
-    embedding vector(3072)
+    file_name TEXT,
+    toc TEXT,
+    page INTEGER,
+    toc_vector vector(3072)
 );
 ```
 
-## 3. GINインデックスの作成（コサイン類似度用）
+## 3. HNSWインデックスの作成
 
 ```sql
-CREATE INDEX ON items USING gin (embedding vector_cosine_ops);
+CREATE INDEX ON items USING hnsw (toc_vector);
 ```
 
-## 4. データの挿入
+## 4. GINインデックスの作成
 
 ```sql
-INSERT INTO items (embedding) VALUES (vector'[0.1, 0.2, ...]');
+CREATE INDEX ON items USING gin (toc_vector vector_l2_ops);
 ```
 
-## 5. コサイン類似度検索の実行
+## 5. データの挿入
 
 ```sql
-SELECT * FROM items ORDER BY embedding <=> vector'[0.1, 0.2, ...]' LIMIT 10;
+INSERT INTO items (file_name, toc, page, toc_vector) VALUES
+('document1.pdf', 'Introduction to HNSW', 1, vector'[0.1, 0.2, ...]'),
+('document2.pdf', 'Advanced HNSW Techniques', 2, vector'[0.3, 0.4, ...]');
+```
+
+## 6. HNSW + GINによる類似検索の実行
+
+```sql
+SELECT * FROM items
+WHERE toc_vector @> 'フィルタ条件'
+ORDER BY toc_vector <=> vector'[0.1, 0.2, ...]'
+LIMIT 10;
 ```
 
 ## インデックスの確認

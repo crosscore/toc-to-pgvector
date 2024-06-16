@@ -1,7 +1,16 @@
 
-# pgvector + コサイン類似度 + GINインデックスによる検索クエリの高速化
+# コサイン類似度による検索クエリの高速化
 
 ## 1. PostgreSQLとpgvectorのインストール
+
+### a. Dockerを使用する場合
+
+```bash
+docker pull ankane/pgvector:latest
+docker run -d -p 5432:5432 --name pgvector -e POSTGRES_PASSWORD=mysecretpassword ankane/pgvector:latest
+```
+
+### b. ローカルインストールの場合
 
 ```bash
 sudo apt-get install postgresql
@@ -12,10 +21,7 @@ psql -c "CREATE EXTENSION vector"
 
 ```sql
 CREATE TABLE items (
-    id SERIAL PRIMARY KEY,
-    file_name TEXT,
-    toc TEXT,
-    page INTEGER,
+    id serial PRIMARY KEY,
     embedding vector(3072)
 );
 ```
