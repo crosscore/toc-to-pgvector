@@ -17,8 +17,8 @@ conn = psycopg2.connect(
     dbname=os.getenv("DATABASE_NAME"),
     user=os.getenv("DATABASE_USER"),
     password=os.getenv("DATABASE_PASSWORD"),
-    host=os.getenv("DATABASE_HOST"),  # localhost
-    port=os.getenv("DATABASE_PORT")  # ホストのポートを5432に設定
+    host=os.getenv("DATABASE_HOST"),
+    port=os.getenv("DATABASE_PORT")
 )
 cursor = conn.cursor()
 
@@ -40,7 +40,7 @@ print(csv_files)
 
 def get_embedding(text):
     embedding = embeddings.embed_query(text)
-    print("Embedding for text:", text, "is", embedding[:15], "... and more")
+    print("Embedding for text:", text, "is", embedding[:1], "... and more")
     return embedding
 
 # 全CSVファイルに対してベクトル化の処理を実行

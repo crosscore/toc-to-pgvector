@@ -7,7 +7,7 @@ import time
 def extract_toc_from_pdf(pdf_path):
     doc = fitz.open(pdf_path)
     toc = doc.get_toc()
-    return [(item[1], item[2]) for item in toc]  # (text, page number)
+    return [(item[1], item[2]) for item in toc]  # (text, page_num)
 
 def write_toc_to_csv(toc, pdf_path, csv_output_path):
     toc_data = []
@@ -21,7 +21,7 @@ def write_toc_to_csv(toc, pdf_path, csv_output_path):
 
 
 pdf_dir = '../data/pdf/'
-csv_dir = '../data/csv/'
+csv_dir = '../data/csv/original/'
 os.makedirs(csv_dir, exist_ok=True)
 
 pdf_files = glob.glob(os.path.join(pdf_dir, '*.pdf'))
