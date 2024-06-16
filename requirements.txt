@@ -25,3 +25,4 @@ xlrd
 azure-ai-documentintelligence
 glob2
 psycopg2-binary
+sqlalchemy
