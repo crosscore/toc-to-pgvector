@@ -14,7 +14,7 @@ docker run -d -p 5432:5432 --name pgvector -e POSTGRES_PASSWORD=mysecretpassword
 
 ```bash
 sudo apt-get install postgresql
-psql -c "CREATE EXTENSION vector"
+psql -c "CREATE EXTENSION IF NOT EXISTS vector"
 ```
 
 ## 2. テーブルの作成
