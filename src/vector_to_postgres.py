@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS toc_table (
     file_name TEXT,
     toc TEXT,
     page INTEGER,
-    toc_vector vector(10)
+    toc_vector vector(3072)
 );
 """
 cursor.execute(create_table_query)
