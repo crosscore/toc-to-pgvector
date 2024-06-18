@@ -4,16 +4,49 @@ import glob
 from dotenv import load_dotenv
 import psycopg2
 import ast
+import time
+import logging
 
 load_dotenv()
+print(f"DB_NAME: {os.getenv('DB_NAME')}")
+print(f"DB_USER: {os.getenv('DB_USER')}")
+print(f"DB_PASSWORD: {os.getenv('DB_PASSWORD')}")
+print(f"DB_HOST: {os.getenv('DB_HOST')}")
+print(f"DB_PORT: {os.getenv('DB_PORT')}")
 
-conn = psycopg2.connect(
-    dbname=os.getenv("DATABASE_NAME"),
-    user=os.getenv("DATABASE_USER"),
-    password=os.getenv("DATABASE_PASSWORD"),
-    host=os.getenv("DATABASE_HOST"),
-    port=os.getenv("DATABASE_PORT")
-)
+# ロギングの設定
+os.makedirs('../log', exist_ok=True)
+logging.basicConfig(filename='../log/database_connection.log', level=logging.INFO)
+
+max_retries = 10
+retry_delay = 2  # 秒
+
+for attempt in range(max_retries):
+    try:
+        conn = psycopg2.connect(
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host="localhost",
+            port=os.getenv("DB_PORT")
+        )
+        logging.info("Connected to the database successfully on attempt %d", attempt + 1)
+        print("Connected to the database successfully")
+        break
+    except psycopg2.OperationalError as e:
+        logging.error("Attempt %d failed: %s", attempt + 1, e)
+        print(f"Attempt {attempt + 1} failed: {e}")
+        if attempt < max_retries - 1:
+            print(f"Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+        else:
+            logging.critical("Max retries reached, failed to connect to the database")
+            print("Max retries reached, failed to connect to the database")
+            raise
+
+print("ログファイルに接続結果が記録されました。")
+
+
 cursor = conn.cursor()
 
 create_table_query = """
@@ -22,7 +55,7 @@ CREATE TABLE IF NOT EXISTS toc_table (
     file_name TEXT,
     toc TEXT,
     page INTEGER,
-    toc_vector vector(3072)
+    toc_vector vector(10)
 );
 """
 cursor.execute(create_table_query)
@@ -43,6 +76,9 @@ for input_file_path in csv_files:
 
             # ベクトルをリスト形式に変換
             toc_vector = ast.literal_eval(row['toc_vector'])
+
+            # リストの各要素をfloatにキャスト
+            toc_vector = [float(x) for x in toc_vector]
 
             insert_query = """
             INSERT INTO toc_table (file_name, toc, page, toc_vector)

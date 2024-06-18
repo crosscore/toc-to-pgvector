@@ -6,15 +6,15 @@ import ast
 
 load_dotenv()
 
-DATABASE_HOST = "localhost"
-DATABASE_PORT = "5433"
-DATABASE_USER = os.getenv("DATABASE_USER")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
-DATABASE_NAME = os.getenv("DATABASE_NAME")
+DB_NAME = "toc_db"
+DB_USER = "user"
+DB_PASSWORD = "pass"
+DB_HOST = "localhost"
+DB_PORT = "5432"
 
 # SQLAlchemyエンジンの作成
-DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
-engine = create_engine(DATABASE_URL)
+DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+engine = create_engine(DB_URL)
 
 query = "SELECT * FROM toc_table"
 df = pd.read_sql(query, engine)
@@ -25,4 +25,6 @@ df['toc_vector'] = df['toc_vector'].apply(ast.literal_eval)
 print(df)
 print(f"len(df['toc_vector'][0]): {len(df['toc_vector'][0])}")
 
-print(df['toc_vector'][0])
+print(len(df['toc_vector'][0]))
+print(len(df['toc_vector'][1]))
+print(len(df['toc_vector'][2]))

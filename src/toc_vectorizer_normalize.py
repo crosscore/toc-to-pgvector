@@ -39,7 +39,7 @@ def normalize_vector(vector):
 # 各CSVファイルに対して処理を実行
 for input_file_path in csv_files:
     print(f"Processing file: {input_file_path}")
-    output_file_path = os.path.join(output_directory, os.path.splitext(os.path.basename(input_file_path))[0] + '_vectorized.csv')
+    output_file_path = os.path.join(output_directory, os.path.splitext(os.path.basename(input_file_path))[0] + '_vector_normalized.csv')
 
     df = pd.read_csv(input_file_path)
     print(f"DataFrame loaded: {df.head()}")

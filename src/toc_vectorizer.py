@@ -31,7 +31,7 @@ for input_file_path in csv_files:
 
     df = pd.read_csv(input_file_path)
 
-    # "toc(vector)"列を追加してベクトル化
-    df['toc(vector)'] = df['toc'].apply(lambda x: get_embedding(x))
+    # "toc_vector"列を追加してベクトルを保存
+    df['toc_vector'] = df['toc'].apply(lambda x: get_embedding(x))
 
     df.to_csv(output_file_path, index=False)

@@ -26,10 +26,33 @@ docker-compose up -d
 docker-compose exec pgvector_db bash
 
 # psqlコマンドを実行しデータベースに接続
-psql -U db_user -d toc_db
+psql -U user -d toc_db
 
 # pgvector拡張機能を有効化
 CREATE EXTENSION IF NOT EXISTS vector;
 
-# pgvector_db以外からの接続
-psql -h ${DATABASE_HOST} -U ${DATABASE_USER} -d ${DATABASE_NAME}
+
+# コンテナ外部から接続
+psql -h localhost -U user -d toc_db -p 5432
+
+# コンテナ内部から接続
+psql -h pgvector_db -U user -d toc_db -p 5432
+
+# .env
+OPENAI_API_KEY=api_key
+DB_NAME=toc_db
+DB_USER=user
+DB_PASSWORD=pass
+DB_HOST=pgvector_db
+DB_PORT=5432
+
+5432（左側）: ホストマシン側のポート番号。ホストマシンは、このポートを通じて外部からの接続を受け付けます。この場合、ホストマシンの5432ポートでPostgreSQLデータベースにアクセスできるように設定されます。
+
+5432（右側）: コンテナ内のポート番号。コンテナ内で実行されているPostgreSQLデータベースは、このポートを使用して接続を受け付けます。PostgreSQLのデフォルトポート番号は5432であり、この設定ではデフォルトポートを使用します。
+
+
+# テーブルの中身を削除
+TRUNCATE TABLE toc_table;
+
+# テーブルの削除
+DROP TABLE toc_table CASCADE;
