@@ -21,10 +21,7 @@ df = pd.read_sql(query, engine)
 
 # toc_vectorカラムをリストに変換
 df['toc_vector'] = df['toc_vector'].apply(ast.literal_eval)
-
 print(df)
-print(f"len(df['toc_vector'][0]): {len(df['toc_vector'][0])}")
 
-print(len(df['toc_vector'][0]))
-print(len(df['toc_vector'][1]))
-print(len(df['toc_vector'][2]))
+for i in range(10):
+    print(len(df['toc_vector'][i]))

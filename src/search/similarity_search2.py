@@ -51,7 +51,7 @@ cursor.execute(similarity_search_query, (normalize_query_vector.tolist(),))
 results = cursor.fetchall()
 
 # 検索結果の表示
-display_results(results)
+(results)
 
 cursor.close()
 conn.close()
