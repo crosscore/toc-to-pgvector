@@ -71,6 +71,13 @@ conn = psycopg2.connect(
 )
 cursor = conn.cursor()
 
+# 保存されているベクトルデータをチェック
+# check_query = "SELECT id, toc_vector FROM toc_table LIMIT 5;"
+# cursor.execute(check_query)
+# stored_vectors = cursor.fetchall()
+# for vector in stored_vectors:
+#     print(f"Stored vector ID: {vector[0]}, Vector: {np.array(vector[1])}")
+
 # 類似検索クエリの実行
 similarity_search_query = """
 SELECT file_name, toc, page, toc_vector, (toc_vector <-> %s::vector) AS distance

@@ -1,12 +1,3 @@
-"""
-# 保存されているベクトルデータをチェック
-# check_query = "SELECT id, toc_vector FROM toc_table LIMIT 5;"
-# cursor.execute(check_query)
-# stored_vectors = cursor.fetchall()
-# for vector in stored_vectors:
-#     print(f"Stored vector ID: {vector[0]}, Vector: {np.array(vector[1])}")
-"""
-
 import psycopg2
 import numpy as np
 from dotenv import load_dotenv
@@ -50,10 +41,10 @@ cursor = conn.cursor()
 
 # 類似検索クエリの実行
 similarity_search_query = """
-SELECT file_name, toc, page, toc_vector, (toc_vector <-> %s::vector) AS distance
+SELECT file_name, toc, page, toc_vector, (toc_vector <#> %s::vector) AS distance
 FROM toc_table
 ORDER BY distance
-LIMIT 5;
+LIMIT 10;
 """
 print("Executing similarity search query...\n")
 cursor.execute(similarity_search_query, (normalize_query_vector.tolist(),))
