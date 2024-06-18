@@ -5,12 +5,38 @@ from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage
 from dotenv import load_dotenv
 import os
+from pydantic import Field
+from typing import List
+
+# カスタムチャットメッセージ履歴クラス
+class LimitedChatMessageHistory(ChatMessageHistory):
+    max_messages: int = Field(default=10)
+    max_characters: int = Field(default=1000)  # 新しい上限設定
+
+    def __init__(self, max_messages=10, max_characters=1000):
+        super().__init__()
+        self.max_messages = max_messages
+        self.max_characters = max_characters
+
+    def add_message(self, message):
+        super().add_message(message)
+        # メッセージ数の制限
+        if len(self.messages) > self.max_messages:
+            self.messages = self.messages[-self.max_messages:]
+        # 文字数の制限
+        total_characters = sum(len(msg.content) for msg in self.messages)
+        while total_characters > self.max_characters:
+            self.messages.pop(0)
+            total_characters = sum(len(msg.content) for msg in self.messages)
 
 load_dotenv()
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
 AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
+
+MAX_MESSAGE = 10
+MAX_CHARACTERS = 1000  # 新しい上限設定
 
 llm = AzureChatOpenAI(
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
@@ -39,9 +65,9 @@ runnable = prompt_template | llm
 # セッションIDごとの会話履歴の取得
 store = {}
 
-def get_session_history(session_id: str) -> ChatMessageHistory:
+def get_session_history(session_id: str) -> LimitedChatMessageHistory:
     if session_id not in store:
-        store[session_id] = ChatMessageHistory()
+        store[session_id] = LimitedChatMessageHistory(max_messages=MAX_MESSAGE, max_characters=MAX_CHARACTERS)
     return store[session_id]
 
 # RunnableWithMessageHistoryの準備
@@ -66,14 +92,17 @@ def chat_with_history(user_input, session_id):
 
 # サンプルの会話ループ
 if __name__ == "__main__":
-    print("会話ボットへようこそ！終了するには 'exit' と入力してください。")
+    print("End: press 'exit'")
     session_id = "123"  # セッションIDを固定で設定
     while True:
-        user_input = input("あなた: ")
+        user_input = input("Human: ")
         if user_input.lower() == 'exit':
             break
         response = chat_with_history(user_input, session_id)
-        print(f"ボット: {response}")
+        print(f"AI: {response}")
 
     # 会話履歴の確認
-    print("\n会話履歴:\n", store[session_id].messages)
+    if session_id in store:
+        print("\n会話履歴:\n", store[session_id].messages)
+    else:
+        print("\n会話履歴はありません。")
