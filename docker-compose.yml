@@ -14,7 +14,9 @@ services:
       - pgvector_db
 
   pgvector_db:
-    image: ankane/pgvector:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.pgvector
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}

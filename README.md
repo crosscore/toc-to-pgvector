@@ -56,3 +56,19 @@ TRUNCATE TABLE toc_table;
 
 # テーブルの削除
 DROP TABLE toc_table CASCADE;
+
+# バージョン確認
+SELECT version();
+\dx
+
+CREATE TABLE IF NOT EXISTS toc_table (
+    id SERIAL PRIMARY KEY,
+    file_name TEXT,
+    toc TEXT,
+    page INTEGER,
+    toc_halfvec halfvec(3072)
+);
+
+CREATE INDEX ON toc_table USING hnsw (toc_halfvec halfvec_ip_ops);
+
+\d+ documents
